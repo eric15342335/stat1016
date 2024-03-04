@@ -1,0 +1,4 @@
+grequests==0.7.0
+pandas==2.2.1
+pyrfc6266==1.0.2
+Requests==2.31.0
