@@ -26,16 +26,11 @@ for days in range(1, num_of_days):
         year = ""
     else:
         year = "_" + _year
-    
-    if _year == "2020":
-        branch = "master"
-    else:
-        branch = "main"
 
     for name in ["Hashtag", "Sentiment"]:
         for hour in range(24):
             hour = str(hour).zfill(2)
-            url = f"https://raw.githubusercontent.com/lopezbec/COVID19_Tweets_Dataset{year}/{branch}/Summary_{name}/{folder_name}/{date}_{hour}_Summary_{name}.csv"
+            url = f"https://raw.githubusercontent.com/lopezbec/COVID19_Tweets_Dataset{year}/main/Summary_{name}/{folder_name}/{date}_{hour}_Summary_{name}.csv"
             print(hour, url)
             if not os.path.exists(f'{date}_{hour}_Summary_{name}.csv'): # if the file does not exist, download it
                 response = session.get(url, timeout=10)
@@ -47,29 +42,16 @@ for days in range(1, num_of_days):
 
 
     # Load the first CSV table with ID and Tag
-    if _year != "2020":
-        # Load the first CSV table with ID and Tag
-        for f in glob.glob("*_Summary_Hashtag.csv"):
-            print(f"Filtering {f}")
-            df_tags = pd.read_csv(f, encoding= 'unicode_escape')
-            filtered_one += [df_tags[df_tags["Hastag"].str.contains('covid', case=False)
-                                    | df_tags["Hastag"].str.contains('omicorn', case=False)
-                                    | df_tags["Hastag"].str.contains('corona', case=False)
-                                    | df_tags["Hastag"].str.contains('lockdown', case=False)
-                                    | df_tags["Hastag"].str.contains('stayhome', case=False)
-                                    | df_tags["Hastag"].str.contains('wearamask', case=False)
-                                    ].drop_duplicates(subset=['Tweet_ID'])]
-    else:   # Researcher data mistake typo :(((((
-        for f in glob.glob("*_Summary_Hashtag.csv"):
-            print(f"Filtering {f}")
-            df_tags = pd.read_csv(f, encoding= 'unicode_escape')
-            filtered_one += [df_tags[df_tags["Hashtag"].str.contains('covid', case=False)
-                                    | df_tags["Hashtag"].str.contains('omicorn', case=False)
-                                    | df_tags["Hashtag"].str.contains('corona', case=False)
-                                    | df_tags["Hashtag"].str.contains('lockdown', case=False)
-                                    | df_tags["Hashtag"].str.contains('stayhome', case=False)
-                                    | df_tags["Hashtag"].str.contains('wearamask', case=False)
-                                    ].drop_duplicates(subset=['Tweet_ID'])]
+    for f in glob.glob("*_Summary_Hashtag.csv"):
+        df_tags = pd.read_csv(f)
+        filtered_one += [df_tags[df_tags["Hastag"].str.contains('covid', case=False)
+                                | df_tags["Hastag"].str.contains('omicorn', case=False)
+                                | df_tags["Hastag"].str.contains('corona', case=False)
+                                | df_tags["Hastag"].str.contains('lockdown', case=False)
+                                | df_tags["Hastag"].str.contains('stayhome', case=False)
+                                | df_tags["Hastag"].str.contains('wearamask', case=False)
+                                ].drop_duplicates(subset=['Tweet_ID'])]
+
     merged_df = pd.DataFrame()
     if len(filtered_one) >= 2:
         merged_df = pd.concat([filtered_one.pop(0), filtered_one.pop(0)], axis=0)
